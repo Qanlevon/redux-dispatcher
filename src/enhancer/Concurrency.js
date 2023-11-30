@@ -54,11 +54,12 @@ const Concurrency = (() => {
 	}
 
 	const injectResult = action => {
-		const event = Events.get(action.type + action.key)
+		const actionKey = Math.random()
+		const event = Events.get(action.type + actionKey)
 		event.done = false
 
 		const action_waitResult = (listener) => {
-			return waitResult(action.type + action.key, listener)
+			return waitResult(action.type + actionKey, listener)
 		}
 
 		const dispatchResult = data => {

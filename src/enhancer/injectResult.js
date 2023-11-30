@@ -31,14 +31,5 @@ export const injectResult = action => {
 		set: setResult,
 	})
 
-	Object.defineProperties(action, {
-		$result: {
-			get: $result,
-			set: setResult,
-			enumerable: false,
-		},
-		key: Math.random()
-	})
-
 	return action
 }
