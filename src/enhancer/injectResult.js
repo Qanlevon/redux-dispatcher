@@ -1,35 +1,44 @@
 export const withResult = dispatcher => {
-  return (...args) => {
-    const action = typeof dispatcher === 'function' ? dispatcher(...args) : (dispatcher || {});
-    return injectResult(action);
-  };
-};
+	return (...args) => {
+		const action = typeof dispatcher === "function" ? dispatcher(...args) : (dispatcher || {})
+		return injectResult(action)
+	}
+}
 
 export const injectResult = action => {
-  let callback;
+	let callback
 
-  const $result = () => {
-    const promise = new Promise(resolve => callback = resolve);
+	const $result = () => {
+		const promise = new Promise(resolve => callback = resolve)
 
-    /**
+		/**
      * provide an alternative way to set result when action is destructured:
      * const { $result } = withResult(...)(...)
      * $result.value = something
      */
-    Object.defineProperty(promise, 'value', {
-      set: setResult,
-    });
+		Object.defineProperty(promise, "value", {
+			set: setResult,
+		})
 
-    return promise;
-  };
+		return promise
+	}
 
-  // `callback` is actually `resolve` (from Promise) at the time setter is called
-  const setResult = data => callback(data);
+	// `callback` is actually `resolve` (from Promise) at the time setter is called
+	const setResult = data => callback(data)
 
-  Object.defineProperty(action, '$result', {
-    get: $result,
-    set: setResult,
-  });
+	Object.defineProperty(action, "$result", {
+		get: $result,
+		set: setResult,
+	})
 
-  return action;
-};
+	Object.defineProperties(action, {
+		$result: {
+			get: $result,
+			set: setResult,
+			enumerable: false,
+		},
+		key: Math.random()
+	})
+
+	return action
+}

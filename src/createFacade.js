@@ -47,7 +47,7 @@ const createDispatcher = (actionType, actionCreator) => {
 
     let action = injectResult({
       type: payload.type || actionType,
-      ...payload
+      ...payload,
     });
     action = Concurrency.injectResult(action);
     store.dispatch(action);
