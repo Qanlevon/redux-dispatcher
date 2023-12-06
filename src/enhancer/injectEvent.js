@@ -1,0 +1,46 @@
+const injectEvent = action => {
+	const event = {
+		result: undefined,
+		listener: undefined
+	}
+
+	const waitResult = (listener) => {
+		if (typeof listener === "function") {
+			event.listener = listener
+			const unsubscribe = () => {
+				event.listener = undefined
+			}
+			unsubscribe.remove = unsubscribe
+			return unsubscribe
+		}
+
+		if (event.result)
+			return event.result
+
+		return new Promise(resolve => {
+			event.listener = resolve
+		})
+	}
+
+	const dispatchResult = data => {
+		if (event.listener) {
+			return event.listener(data)
+		}
+		event.result = data
+	}
+
+	Object.defineProperties(action, {
+		waitResult: {
+			value: waitResult,
+			enumerable: false,
+		},
+		dispatchResult: {
+			value: dispatchResult,
+			enumerable: false
+		},
+	})
+
+	return action
+}
+
+export default injectEvent

@@ -22,7 +22,7 @@ declare class PromiseResult {
    */
   $result: any;
 
-  waitResult: typeof action_waitResult;
+  waitResult: typeof waitResult;
   dispatchResult: ResultCallback;
 }
 
@@ -31,11 +31,8 @@ interface UnsubscribeFunction {
   remove: () => void;
 }
 
-declare function action_waitResult<T = any>(): Promise<T>;
-declare function action_waitResult(listener: ResultCallback): UnsubscribeFunction;
-
-export function waitResult<T = any>(type: string): Promise<T>;
-export function waitResult(type: string, listener: ResultCallback): UnsubscribeFunction;
+declare function waitResult<T = any>(): Promise<T>;
+declare function waitResult(listener: ResultCallback): UnsubscribeFunction;
 
 type DispatchFunction = (...args: any[]) => any;
 
@@ -43,16 +40,13 @@ type ActionWithPromise<D extends DispatchFunction> = (...args: Parameters<D>) =>
 
 type DispatchToAC = Record<string, DispatchFunction & any>;
 
-export function synthesize<M extends DispatchToAC, K extends string>(
+export function createDispatcher<M extends DispatchToAC, K extends string>(
   key: K,
   mapDispatchToAC: M,
 ): {
   [D in keyof M]: ActionWithPromise<M[D]> & string & TakeableChannel<any> & Action<string>;
 } &
   Syn<K>;
-
-export const createDispatcher: typeof synthesize;
-
 
 type MapActionToReducer<S> = { [T: string]: Partial<S> | ((state: S, payload: any) => S) };
 
@@ -61,10 +55,10 @@ export function createReducer<S>(
   reducer: MapActionToReducer<S> | ((context: any) => MapActionToReducer<S>),
 ): Reducer<S>;
 
+
 type ContextualMiddleware = {
   withContext: (context: any) => Middleware;
 };
-
 
 export const dispatcherMiddleware: ContextualMiddleware & Middleware;
 
@@ -83,4 +77,3 @@ type CaseArrayFunc<S> = <D extends DispatchFunction[]>(
 
 type CaseBuilder<S> = { case: CaseFunc<S> } & { case: CaseArrayFunc<S> }
 
-export function buildReducer<S>(initialState: S): CaseBuilder<S>
