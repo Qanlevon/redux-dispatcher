@@ -1,5 +1,6 @@
 const injectEvent = action => {
 	const event = {
+		done: false,
 		result: undefined,
 		listener: undefined
 	}
@@ -14,7 +15,9 @@ const injectEvent = action => {
 			return unsubscribe
 		}
 
-		if (event.result)
+		// should check event.done instead event.result
+		// because we allow result to be dispatched as Falsy value
+		if (event.done)
 			return event.result
 
 		return new Promise(resolve => {
@@ -26,6 +29,7 @@ const injectEvent = action => {
 		if (event.listener) {
 			return event.listener(data)
 		}
+		event.done = true
 		event.result = data
 	}
 
