@@ -1,19 +1,21 @@
-name: Publish module to NPM
+name: Publish to NPM
 on:
   push:
     branches:
-      - master
+      - main
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: 16
+          node-version: 24
           cache: 'yarn'
+          registry-url: 'https://registry.npmjs.org'
 
-      - run: yarn
+      - run: yarn install --frozen-lockfile
+      - run: yarn build
       - run: yarn publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
